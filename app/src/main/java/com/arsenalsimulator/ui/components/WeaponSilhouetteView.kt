@@ -64,7 +64,6 @@ fun WeaponSilhouetteView(weapon: Weapon?, shootSignal: Int = 0) {
         val cx = size.width / 2f
         val horizon = size.height * 0.55f
 
-        // Ciel (degrade)
         drawRect(
             brush = Brush.verticalGradient(
                 colors = listOf(Color(0xFF5AA8D8), Color(0xFFB8D8E8))
@@ -72,14 +71,12 @@ fun WeaponSilhouetteView(weapon: Weapon?, shootSignal: Int = 0) {
             size = Size(size.width, horizon)
         )
 
-        // Soleil / halo
         drawCircle(
             color = Color(0xFFFFF2C0).copy(alpha = 0.6f),
             radius = 90f,
             center = Offset(size.width * 0.85f, horizon * 0.35f)
         )
 
-        // Sol (champ)
         drawRect(
             brush = Brush.verticalGradient(
                 colors = listOf(Color(0xFF6B8E4E), Color(0xFF3E5A2A)),
@@ -89,7 +86,6 @@ fun WeaponSilhouetteView(weapon: Weapon?, shootSignal: Int = 0) {
             size = Size(size.width, size.height - horizon)
         )
 
-        // Ligne d'horizon
         drawLine(
             color = Color(0xFF2A3D1A),
             start = Offset(0f, horizon),
@@ -97,7 +93,6 @@ fun WeaponSilhouetteView(weapon: Weapon?, shootSignal: Int = 0) {
             strokeWidth = 3f
         )
 
-        // Lignes de perspective du sol
         for (i in -6..6) {
             val xTop = cx + i * 80f
             val xBot = cx + i * 280f
@@ -109,7 +104,6 @@ fun WeaponSilhouetteView(weapon: Weapon?, shootSignal: Int = 0) {
             )
         }
 
-        // Ombre au sol sous l'arme
         val shadowY = horizon + 60f
         drawOval(
             color = Color.Black.copy(alpha = 0.35f),
@@ -117,14 +111,12 @@ fun WeaponSilhouetteView(weapon: Weapon?, shootSignal: Int = 0) {
             size = Size(scale * 4.4f, scale * 0.45f)
         )
 
-        // Arme
         weapon?.let { w ->
             weaponBoxes(w).forEach { box ->
                 drawBox(box, rotation, scale, cx, horizon + 10f)
             }
         }
 
-        // Flash au tir
         if (flash > 0f && weapon != null) {
             val tipX = scale * 1.8f
             val flashOffset = project(tipX, 0.4f, 0f, rotation, scale, cx, horizon + 10f)
@@ -169,25 +161,24 @@ private fun DrawScope.drawBox(
 
     fun p(x: Float, y: Float, z: Float) = project(x, y, z, rotation, scale, cx, cy)
 
-    // Faces cachees (dessinees d'abord)
-    drawPath(pathOf(p(x0,y0,z0), p(x1,y0,z0), p(x1,y0,z1), p(x0,y0,z1)),
+    drawPath(pathOf(listOf(p(x0,y0,z0), p(x1,y0,z0), p(x1,y0,z1), p(x0,y0,z1))),
         color = box.color.copy(alpha = 0.4f))
-    drawPath(pathOf(p(x0,y0,z0), p(x1,y0,z0), p(x1,y1,z0), p(x0,y1,z0)),
+    drawPath(pathOf(listOf(p(x0,y0,z0), p(x1,y0,z0), p(x1,y1,z0), p(x0,y1,z0))),
         color = box.color.copy(alpha = 0.55f))
-    drawPath(pathOf(p(x0,y0,z0), p(x0,y0,z1), p(x0,y1,z1), p(x0,y1,z0)),
+    drawPath(pathOf(listOf(p(x0,y0,z0), p(x0,y0,z1), p(x0,y1,z1), p(x0,y1,z0))),
         color = box.color.copy(alpha = 0.65f))
 
-    // Faces visibles (par-dessus)
-    drawPath(pathOf(p(x0,y1,z0), p(x1,y1,z0), p(x1,y1,z1), p(x0,y1,z1)),
+    drawPath(pathOf(listOf(p(x0,y1,z0), p(x1,y1,z0), p(x1,y1,z1), p(x0,y1,z1))),
         color = box.color.copy(alpha = 1f))
-    drawPath(pathOf(p(x1,y0,z0), p(x1,y0,z1), p(x1,y1,z1), p(x1,y1,z0)),
+    drawPath(pathOf(listOf(p(x1,y0,z0), p(x1,y0,z1), p(x1,y1,z1), p(x1,y1,z0))),
         color = box.color.copy(alpha = 0.85f))
-    drawPath(pathOf(p(x0,y0,z1), p(x1,y0,z1), p(x1,y1,z1), p(x0,y1,z1)),
+    drawPath(pathOf(listOf(p(x0,y0,z1), p(x1,y0,z1), p(x1,y1,z1), p(x0,y1,z1))),
         color = box.color.copy(alpha = 0.95f))
 }
 
-private fun pathOf(vararg points: Offset): Path {
+private fun pathOf(points: List<Offset>): Path {
     val path = Path()
+    if (points.isEmpty()) return path
     path.moveTo(points[0].x, points[0].y)
     for (i in 1 until points.size) {
         path.lineTo(points[i].x, points[i].y)

@@ -6,7 +6,6 @@ plugins {
 android {
     namespace = "com.arsenalsimulator"
     compileSdk = 34
-
     defaultConfig {
         applicationId = "com.arsenalsimulator"
         minSdk = 24
@@ -28,4 +27,5 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.activity:activity-compose:1.9.2")
+    implementation("com.google.android.material:material:1.12.0")
 }
